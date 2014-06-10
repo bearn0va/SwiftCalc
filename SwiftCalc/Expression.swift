@@ -85,7 +85,7 @@ class Expression: Value {
                 case .Multiply:
                     return Simple(value: aleft.value * aright.value)
                 case .Divide:
-                    return Fraction(numerator: aleft.value, denominator: aright.value)
+                    return Fraction(numerator: aleft.value, denominator: aright.value).evaluate(ctx)
                 case .Power:
                     return Simple(value: power(aleft.value, aright.value))
                 default:
@@ -148,6 +148,10 @@ class Expression: Value {
                     return Error()
                 }
             }
+        } else if let _left = left as? Fraction {
+            return _left.arithmatic(self.type, b: right).evaluate(ctx)
+        } else if let _right = right as? Fraction {
+            return _right.arithmatic(self.type, b: left, reverse: true).evaluate(ctx)
         }
         return self
     }
