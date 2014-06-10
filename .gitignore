@@ -1,0 +1,9 @@
+# OS X Yuck
+.DS_Store
+
+# Xcode
+*.xcodeproj/
+
+# Build
+build/
+
