@@ -64,6 +64,15 @@ class Expression: Value {
     }
     
     func evaluate(ctx: Context) -> Value {
+        if type == .Assign {
+            if let aleft = self.left as? Variable {
+                var ret = self.right.evaluate(ctx)
+                ctx.setGlobal(ret, name: aleft.value)
+                return ret
+            } else {
+                return self
+            }
+        }
         var left = self.left.evaluate(ctx)
         var right = self.right.evaluate(ctx)
         if let aleft = left as? Simple<Int> {

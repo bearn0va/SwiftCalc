@@ -9,11 +9,11 @@
 import Foundation
 
 var s = Script()
+var ctx = Context()
 
 while true {
     var r = s.readLine()
     println(r.verbose(0))
     println(r.dump())
-    var ctx = Context()
     println(r.evaluate(ctx).dump())
 }

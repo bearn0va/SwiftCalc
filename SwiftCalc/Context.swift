@@ -10,7 +10,11 @@ import Foundation
 
 class Context {
     var locals = Dictionary<String, Value>[]()
-    var count = 0
+    var count: Int = -1
+    
+    init() {
+        self.newLocals()
+    }
     
     func newLocals() {
         count += 1
@@ -28,6 +32,14 @@ class Context {
                 return value
             }
         }
-        return Simple(value: named)
+        return Variable(value: named)
+    }
+    
+    func setLocal(value: Value, name: String) {
+        locals[0][name] = value
+    }
+    
+    func setGlobal(value: Value, name: String) {
+        locals[count][name] = value
     }
 }

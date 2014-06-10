@@ -100,6 +100,19 @@ class Script {
         return ""
     }
     
+    func readArgumentList(sep: unichar, end: unichar) -> Value[] {
+        var ret = Value[]()
+        while self.character() != 0 && self.character() != end {
+            ret += self.readValue(sep)
+            self.trimSpaces()
+            if self.character() == sep {
+                self.increment()
+            }
+        }
+        self.increment()
+        return ret
+    }
+    
     func readLine() -> Value {
         print(">>> ")
         data = fileHandle.availableData
@@ -108,7 +121,35 @@ class Script {
             line = aline.substringToIndex(aline.length-1)
         }
         index = 0
-        return self.readValue(~"\0")
+        if !self.hasCharacter(~"=") {
+            return self.readValue(~"\0")
+        }
+        var name = self.readNext()
+        if name is Error {
+            return name
+        }
+        if !(name is Variable) {
+            return Error(type: .Syntax, message: "Cannot assign to value other than variable.")
+        }
+        self.trimSpaces()
+        var args: Value[]? = nil
+        if self.character() == ~"(" {
+            self.increment()
+            args = readArgumentList(~",", end: ~")")
+        }
+        self.trimSpaces()
+        var next = ExpressionNextType(self)
+        self.increment()
+        self.trimSpaces()
+        if self.character() == ~"=" {
+            self.increment()
+            self.trimSpaces()
+        }
+        var right = self.readValue(~"\0")
+        if next != ExpressionType.Assign {
+            right = Expression(type: next, left: name, right: right)
+        }
+        return Expression(type: .Assign, left: name, right: right)
     }
     
     func readValue(end: unichar) -> Value {
